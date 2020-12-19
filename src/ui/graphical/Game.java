@@ -14,28 +14,14 @@
  * You should have received a copy of the GNU General Public License along with 
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package minesweeper;
-
-import java.util.HashSet;
-import java.util.Optional;
+package ui.graphical;
 
 /**
- * Represents a board with mines.
+ *
  * @author Alonso del Arte
  */
-public class Board {
+public class Game {
     
-    // STUB TO FAIL THE FIRST TEST
-    public Optional<Mine> queryPosition(Position position) {
-        return Optional.empty();
-    }
-    
-    public Board(Position maxPosition) {
-        this(maxPosition, new HashSet<Position>());
-    }
-    
-    Board(Position maxPos, HashSet<Position> mineLocations) {
-        //
-    }
+    // TODO: Implement the Minesweeper game as a Java Swing program.
     
 }
