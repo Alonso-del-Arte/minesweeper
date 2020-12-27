@@ -22,7 +22,7 @@ package minesweeper;
  * detonated.
  * @author Alonso del Arte
  */
-class Mine {
+public class Mine {
     
     private final Position position;
     
