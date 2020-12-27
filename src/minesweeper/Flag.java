@@ -17,29 +17,42 @@
 package minesweeper;
 
 /**
- * Indicates that a position is believed to have a mine.
+ * Indicates that a position is believed to have a mine. This class is 
+ * immutable.
  * @author Alonso del Arte
  */
-public class Flag {
+class Flag {
     
     private final Position position;
     
     private final boolean correctness;
     
-    // STUB TO FAIL THE FIRST TEST
+    /**
+     * Retrieves the position of this flag.
+     * @return A <code>Position</code> object. It should be the same one that 
+     * was provided to the constructor.
+     */
     public Position getPosition() {
-        return new Position(0, 0);
+        return this.position;
     }
     
+    /**
+     * Indicates whether this flag is a correct flag for its position. If it is, 
+     * it brings the player one step closer to winning. But if it's not, it will 
+     * probably lead the player to incorrectly believe that another position is 
+     * safe when it is in fact mined.
+     * @return True if the position is mined, false otherwise. This is the same 
+     * Boolean value that was provided to the constructor.
+     */
     boolean isCorrect() {
         return this.correctness;
     }
     
-    // STUB TO FAIL THE FIRST TEST
-    public static Flag placeFlag(Position position) {
-        return new Flag(position, true);
-    }
-    
+    /**
+     * Sole constructor.
+     * @param pos The position for the flag.
+     * @param correct True if the position is mined, false otherwise.
+     */
     Flag(Position pos, boolean correct) {
         this.position = pos;
         this.correctness = correct;

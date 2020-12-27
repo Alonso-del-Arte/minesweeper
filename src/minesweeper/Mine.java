@@ -17,23 +17,38 @@
 package minesweeper;
 
 /**
- *
+ * Represents a mine in the Minesweeper game. The class would be immutable 
+ * except that it has one item of state: whether or not the mine has been 
+ * detonated.
  * @author Alonso del Arte
  */
-public class Mine {
+class Mine {
     
     private final Position position;
     
     private boolean detonated = false;
     
+    /**
+     * Retrieves the position of this mine.
+     * @return A <code>Position</code> object. It should be the same one that 
+     * was provided to the constructor.
+     */
     public Position getPosition() {
         return this.position;
     }
     
+    /**
+     * Tells whether or not the mine has been detonated.
+     * @return True if the mine has been detonated, false if not.
+     */
     public boolean hasBeenDetonated() {
         return this.detonated;
     }
     
+    /**
+     * Detonates the mine. Then {@link #hasBeenDetonated()} will return true.
+     * @throws IllegalStateException If the mine has already been detonated.
+     */
     public void detonate() {
         if (this.detonated) {
             String excMsg = "This mine has already been detonated";
@@ -42,6 +57,10 @@ public class Mine {
         this.detonated = true;
     }
     
+    /**
+     * Sole constructor.
+     * @param pos Where to place the mine. Once placed, the mine can't be moved.
+     */
     Mine(Position pos) {
         this.position = pos;
     }

@@ -24,4 +24,8 @@ public class Game {
     
     // TODO: Implement the Minesweeper game as a Java Swing program.
     
+    public static void main(String[] args) {
+        System.out.println("Sorry, graphical UI is not ready yet");
+    }
+    
 }

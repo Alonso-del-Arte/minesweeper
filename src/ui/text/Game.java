@@ -16,12 +16,25 @@
  */
 package ui.text;
 
+import minesweeper.Board;
+import minesweeper.Position;
+import minesweeper.PositionStatus;
+
+import java.util.Optional;
+import java.util.Scanner;
+
 /**
- *
+ * WORK IN PROGRESS: Play the Minesweeper game on the command line. I'm thikning 
+ * the board will be 10 &times; 26 or 26 &times; 10...
  * @author Alonso del Arte
  */
 public class Game {
     
     // TODO: Implement the Minesweeper game as a command line program
+    
+    public static void main(String[] args) {
+        System.out.println("Sorry, text UI is not ready yet");
+//        Scanner input = new Scanner(System.in);
+    }
     
 }

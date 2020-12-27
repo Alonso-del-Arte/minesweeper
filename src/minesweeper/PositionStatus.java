@@ -17,7 +17,10 @@
 package minesweeper;
 
 /**
- * Indicates the status of a position.
+ * Indicates the status of a position. A position should start out covered. As 
+ * the game progresses, it may be revealed to be empty with a number of 
+ * neighboring mines, or it may be revealed to be mined. Also, the position may 
+ * be flagged, which may turn out to be wrongly flagged.
  * @author Alonso del Arte
  */
 public enum PositionStatus {
@@ -127,7 +130,23 @@ public enum PositionStatus {
     
     private final char symbol;
     
-    // STUB TO FAIL THE FIRST TEST
+    /**
+     * Gets a character suitable for the command line version of this game.
+     * @return An ASCII character, according to the status of the position:
+     * <ul>
+     * <li>'?' if the position is covered.</li>
+     * <li>'!' if the position is flagged.</li>
+     * <li>' ' (space) if the position has been revealed to be empty, and have 
+     * no immediately neighboring mines.</li>
+     * <li>A digit from '1' to '8' if the position has been revealed to be empty  
+     * but it has a number of mined immediate neighbors.</li>
+     * <li>'x' if the position has been revealed to have a mine that has not 
+     * been detonated.</li>
+     * <li>'X' if the position has a detonated mine.</li>
+     * <li>'w' if the position was wrongly flagged (that is, the player flagged 
+     * it but it doesn't actually have a mine).</li>
+     * </ul>
+     */
     public char getChar() {
         return this.symbol;
     }
@@ -135,7 +154,5 @@ public enum PositionStatus {
     private PositionStatus(char ch) {
         this.symbol = ch;
     }
-    
-    
-    
+        
 }
