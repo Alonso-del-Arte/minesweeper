@@ -93,13 +93,11 @@ public class Board {
     private void revealEmptyNeighbors(Position initial) {
         HashSet<Position> positions = new HashSet<>();
         HashSet<Position> prevNeighbors = new HashSet<>();
-        HashSet<Position> neighbors;
-        HashSet<Position> specNeighbors;
+        HashSet<Position> neighbors, specNeighbors;
         prevNeighbors.add(initial);
         int prevCount = 0;
         int currCount = 1;
         while (prevCount < currCount) {
-            positions.addAll(prevNeighbors);
             neighbors = new HashSet<>();
             for (Position position : prevNeighbors) {
                 specNeighbors = position.getNeighbors(this.maxCorner);
@@ -116,10 +114,14 @@ public class Board {
                     }
                 }
             }
+            positions.addAll(neighbors);
             prevNeighbors = neighbors;
             prevCount = currCount;
             currCount = positions.size();
+            // TODO: Remove next line once debugging is complete
+            System.out.println("currCount = " + currCount);
         }
+        positions.remove(initial);
         positions.forEach((currPos) -> {
             this.statuses.put(currPos, PositionStatus.REVEALED_EMPTY);
         });
@@ -141,9 +143,12 @@ public class Board {
             this.statuses.put(position, PositionStatus.DETONATED);
             this.gameInProgress = false;
         } else {
-            PositionStatus status 
-                    = STATUS_VALUES[this.neighborCounts.get(position)];
+            int neighborCount = this.neighborCounts.get(position);
+            PositionStatus status = STATUS_VALUES[neighborCount];
             this.statuses.put(position, status);
+            if (neighborCount == 0) {
+                revealEmptyNeighbors(position);
+            }
         }
         return option;
     }
