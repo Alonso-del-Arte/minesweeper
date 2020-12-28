@@ -18,7 +18,8 @@ package minesweeper;
 
 /**
  * Indicates that a position is believed to have a mine. This class is 
- * immutable.
+ * immutable. It is package private because outside of the package it would 
+ * reveal whether or not the position has been flagged correctly.
  * @author Alonso del Arte
  */
 class Flag {

@@ -100,6 +100,9 @@ public class BoardTest {
         }
     }
 
+    /**
+     * Another test of reveal function, of class Board.
+     */
     @Test
     public void testRevealEmptySwath() {
         int minedColumnEndX = 28;
@@ -133,6 +136,78 @@ public class BoardTest {
     }
 
     /**
+     * Another test of reveal function, of class Board.
+     */
+    @Test
+    public void testNoRevealForAlreadyRevealed() {
+        Position mineLoc = PositionTest.makePosition();
+        HashSet<Position> mineLocs = new HashSet<>();
+        mineLocs.add(mineLoc);
+        Position mineNeighbor = mineLoc.nextRow();
+        Board board = new Board(mineNeighbor.nextColumn().nextRow(), mineLocs);
+        Optional<Mine> option = board.reveal(mineNeighbor);
+        String msg = "Position " + mineNeighbor + " should be empty";
+        assert !option.isPresent() : msg;
+        assertEquals(PositionStatus.REVEALED_EMPTY_NEAR_1, 
+                board.query(mineNeighbor));
+        try {
+            option = board.reveal(mineNeighbor);
+            msg = "Position " + mineNeighbor.toString() 
+                    + " should not have been revealed a second time as " 
+                    + option.toString();
+            fail(msg);
+        } catch (IllegalStateException ise) {
+            System.out.println("Trying to reveal " + mineNeighbor.toString() 
+                    + " twice correctly caused IllegalStateException");
+            System.out.println("\"" + ise.getMessage() + "\"");
+        } catch (RuntimeException re) {
+            msg = re.getClass().getName() 
+                    + " is the wrong exception to throw for trying to reveal " 
+                    + mineNeighbor.toString() + " twice";
+            fail(msg);
+        }
+    }
+
+    /**
+     * Another test of reveal function, of class Board.
+     */
+    @Test
+    public void testNoRevealAfterGameOver() {
+        Position mineLoc = PositionTest.makePosition();
+        HashSet<Position> mineLocs = new HashSet<>();
+        mineLocs.add(mineLoc);
+        Position mineNeighbor = mineLoc.nextRow();
+        Board board = new Board(mineNeighbor.nextColumn().nextRow(), mineLocs);
+        Optional<Mine> option = board.reveal(mineLoc);
+        if (option.isPresent()) {
+            assertEquals(mineLoc, option.get().getPosition());
+        } else {
+            fail("reveal() function should have revealed a mine");
+        }
+        try {
+            option = board.reveal(mineNeighbor);
+            String msg = "Position " + mineNeighbor.toString() 
+                    + " should not have been revealed as " + option.toString() 
+                    + " after game over";
+            fail(msg);
+        } catch (IllegalStateException ise) {
+            System.out.println("Trying to reveal " + mineNeighbor.toString() 
+                    + " after game over correctly caused IllegalStateException");
+            String excMsg = ise.getMessage();
+            System.out.println("\"" + excMsg + "\"");
+            String msg 
+                    = "Exception message should contain the words \"Game Over\"";
+            assert excMsg.toLowerCase().replace(" ", "").contains("gameover") 
+                    : msg;
+        } catch (RuntimeException re) {
+            String msg = re.getClass().getName() 
+                    + " is the wrong exception to throw for trying to reveal " 
+                    + mineNeighbor.toString() + " after game over";
+            fail(msg);
+        }
+    }
+
+    /**
      * Test of flag procedure, of class Board.
      */
     @Test
@@ -158,6 +233,138 @@ public class BoardTest {
         assertEquals(PositionStatus.FLAGGED, board.query(POSITION_ZERO));
         board.unflag(POSITION_ZERO);
         assertEquals(PositionStatus.COVERED, board.query(POSITION_ZERO));
+    }
+
+    /**
+     * Another test of flag procedure, of class Board.
+     */
+    @Test
+    public void testNoFlagForAlreadyFlagged() {
+        Position mineLoc = PositionTest.makePosition();
+        HashSet<Position> mineLocs = new HashSet<>();
+        mineLocs.add(mineLoc);
+        Board board = new Board(mineLoc.nextColumn(), mineLocs);
+        board.flag(mineLoc);
+        assertEquals(PositionStatus.FLAGGED, board.query(mineLoc));
+        try {
+            board.flag(mineLoc);
+            String msg = "Should not have been able to flag " 
+                    + mineLoc.toString() + " again without first unflagging";
+            fail(msg);
+        } catch (IllegalStateException ise) {
+            System.out.println("Trying to flag " + mineLoc.toString() 
+                    + " twice correctly caused IllegalStateException");
+            System.out.println("\"" + ise.getMessage() + "\"");
+        } catch (RuntimeException re) {
+            String msg = re.getClass().getName() 
+                    + " is the wrong exception to throw for trying to flag " 
+                    + mineLoc.toString() + " twice";
+            fail(msg);
+        }
+    }
+
+    /**
+     * Another test of flag procedure, of class Board.
+     */
+    @Test
+    public void testNoFlagAfterGameOver() {
+        Position mineLoc = PositionTest.makePosition();
+        HashSet<Position> mineLocs = new HashSet<>();
+        mineLocs.add(mineLoc);
+        Board board = new Board(mineLoc.nextColumn(), mineLocs);
+        Optional<Mine> option = board.reveal(mineLoc);
+        String msg = "Position " + mineLoc.toString() + " should have a mine";
+        assert option.isPresent() : msg;
+        msg = "Detonating mine at " + mineLoc.toString() 
+                + " should be game over";
+        assert !board.gameUnderway() : msg;
+        assertEquals(PositionStatus.DETONATED, board.query(mineLoc));
+        try {
+            board.flag(mineLoc);
+            msg = "Should not have been able to flag position " 
+                    + mineLoc.toString() + " after detonating its mine";
+            fail(msg);
+        } catch (IllegalStateException ise) {
+            System.out.println("Trying to flag " + mineLoc.toString() 
+                    + " after detonation correctly caused IllegalStateException");
+            String excMsg = ise.getMessage();
+            System.out.println("\"" + excMsg + "\"");
+            msg = "Exception message should contain the words \"Game Over\"";
+            assert excMsg.toLowerCase().replace(" ", "").contains("gameover") 
+                    : msg;
+        } catch (RuntimeException re) {
+            msg = re.getClass().getName() 
+                    + " is the wrong exception to throw for trying to flag " 
+                    + mineLoc.toString() + " after detonation";
+            fail(msg);
+        }
+    }
+
+    /**
+     * Another test of unflag procedure, of class Board.
+     */
+    @Test
+    public void testNoUnflagIfNotFlagged() {
+        Position mineLoc = PositionTest.makePosition();
+        HashSet<Position> mineLocs = new HashSet<>();
+        mineLocs.add(mineLoc);
+        Board board = new Board(mineLoc.nextColumn(), mineLocs);
+        assertEquals(PositionStatus.COVERED, board.query(mineLoc));
+        try {
+            board.unflag(mineLoc);
+            String msg = "Should not have been able to unflag " 
+                    + mineLoc.toString() + " again without first flagging";
+            fail(msg);
+        } catch (IllegalStateException ise) {
+            System.out.println("Trying to unflag " + mineLoc.toString() 
+                    + " twice correctly caused IllegalStateException");
+            System.out.println("\"" + ise.getMessage() + "\"");
+        } catch (RuntimeException re) {
+            String msg = re.getClass().getName() 
+                    + " is the wrong exception to throw for trying to unflag " 
+                    + mineLoc.toString() + " twice";
+            fail(msg);
+        }
+    }
+
+    /**
+     * Another test of unflag procedure, of class Board.
+     */
+    @Test
+    public void testNoUnflagAfterGameOver() {
+        Position mineLoc = PositionTest.makePosition();
+        HashSet<Position> mineLocs = new HashSet<>();
+        mineLocs.add(mineLoc);
+        Board board = new Board(mineLoc.nextColumn().nextRow(), mineLocs);
+        Position mineNeighbor = mineLoc.nextColumn();
+        board.flag(mineNeighbor);
+        Optional<Mine> option = board.reveal(mineLoc);
+        String msg = "Position " + mineLoc.toString() + " should have a mine";
+        assert option.isPresent() : msg;
+        msg = "Detonating mine at " + mineLoc.toString() 
+                + " should be game over";
+        assert !board.gameUnderway() : msg;
+        assertEquals(PositionStatus.DETONATED, board.query(mineLoc));
+        try {
+            board.unflag(mineNeighbor);
+            msg = "Should not have been able to unflag position " 
+                    + mineNeighbor.toString() 
+                    + " after detonating neighboring mine";
+            fail(msg);
+        } catch (IllegalStateException ise) {
+            System.out.println("Trying to flag " + mineNeighbor.toString() 
+                    + " after game over correctly caused IllegalStateException");
+            String excMsg = ise.getMessage();
+            System.out.println("\"" + excMsg + "\"");
+            msg = "Exception message should contain the words \"Game Over\"";
+            assert excMsg.toLowerCase().replace(" ", "").contains("gameover") 
+                    : msg;
+        } catch (RuntimeException re) {
+            msg = re.getClass().getName() 
+                    + " is the wrong exception to throw for trying to flag " 
+                    + mineLoc.toString() + " after detonating its neighbor";
+            fail(msg);
+        }
     }
 
     /**

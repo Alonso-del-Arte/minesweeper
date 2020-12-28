@@ -41,10 +41,10 @@ public class Board {
     
     private final HashMap<Position, Integer> neighborCounts = new HashMap<>();
     
-    private boolean gameInProgress = true;
+    private boolean gameOver = false;
     
     public boolean gameUnderway() {
-        return this.gameInProgress;
+        return !this.gameOver;
     }
 
     public PositionStatus query(Position position) {
@@ -118,8 +118,6 @@ public class Board {
             prevNeighbors = neighbors;
             prevCount = currCount;
             currCount = positions.size();
-            // TODO: Remove next line once debugging is complete
-            System.out.println("currCount = " + currCount);
         }
         positions.remove(initial);
         positions.forEach((currPos) -> {
@@ -137,14 +135,24 @@ public class Board {
      * contains a <code>Mine</code> object matching <code>position</code>.
      */
     public Optional<Mine> reveal(Position position) {
+        if (this.gameOver) {
+            String excMsg = "Game over; can't reveal any positions";
+            throw new IllegalStateException(excMsg);
+        }
+        PositionStatus status = this.statuses.get(position);
+        if (!status.equals(PositionStatus.COVERED)) {
+            String excMsg = "Can't reveal " + position.toString() 
+                    + " because its status is " + status.toString();
+            throw new IllegalStateException(excMsg);
+        }
         Optional<Mine> option = this.mines.get(position);
         if (option.isPresent()) {
             option.get().detonate();
             this.statuses.put(position, PositionStatus.DETONATED);
-            this.gameInProgress = false;
+            this.gameOver = true;
         } else {
             int neighborCount = this.neighborCounts.get(position);
-            PositionStatus status = STATUS_VALUES[neighborCount];
+            status = STATUS_VALUES[neighborCount];
             this.statuses.put(position, status);
             if (neighborCount == 0) {
                 revealEmptyNeighbors(position);
@@ -154,8 +162,14 @@ public class Board {
     }
     
     public void flag(Position position) {
-        if (!this.gameInProgress) {
-            throw new RuntimeException();
+        if (this.gameOver) {
+            String excMsg = "Game over; can't flag any positions";
+            throw new IllegalStateException(excMsg);
+        }
+        if (this.flags.get(position).isPresent()) {
+            String excMsg = "Position " + position.toString() 
+                    + " is already flagged";
+            throw new IllegalStateException(excMsg);
         }
         boolean correctness = this.mines.get(position).isPresent();
         Flag flag = new Flag(position, correctness);
@@ -165,6 +179,15 @@ public class Board {
     }
     
     public void unflag(Position position) {
+        if (this.gameOver) {
+            String excMsg = "Game over; can't flag any positions";
+            throw new IllegalStateException(excMsg);
+        }
+        if (!this.flags.get(position).isPresent()) {
+            String excMsg = "Position " + position.toString() 
+                    + " can't be unflagged because it's not currently flagged";
+            throw new IllegalStateException(excMsg);
+        }
         this.flags.put(position, Optional.empty());
         this.statuses.put(position, PositionStatus.COVERED);
     }
