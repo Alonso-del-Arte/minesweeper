@@ -48,19 +48,6 @@ public class BoardTest {
     }
     
     /**
-     * Test of gameUnderway function, of class Board.
-     */
-    @Test
-    public void testGameUnderway() {
-        System.out.println("gameUnderway");
-        Position maxPos = PositionTest.makePosition();
-        HashSet<Position> mineLocs = new HashSet<>();
-        Board board = new Board(maxPos, mineLocs);
-        String msg = "Game should be considered to be underway";
-        assert board.gameUnderway() : msg;
-    }
-    
-    /**
      * Test of query function, of class Board.
      */
     @Test
@@ -228,7 +215,8 @@ public class BoardTest {
         System.out.println("unflag");
         HashSet<Position> mineLocs = new HashSet<>();
         mineLocs.add(POSITION_ZERO);
-        Board board = new Board(POSITION_ZERO, mineLocs);
+        mineLocs.add(POSITION_ZERO.nextColumn());
+        Board board = new Board(POSITION_ZERO.nextColumn().nextRow(), mineLocs);
         board.flag(POSITION_ZERO);
         assertEquals(PositionStatus.FLAGGED, board.query(POSITION_ZERO));
         board.unflag(POSITION_ZERO);
@@ -352,7 +340,7 @@ public class BoardTest {
                     + " after detonating neighboring mine";
             fail(msg);
         } catch (IllegalStateException ise) {
-            System.out.println("Trying to flag " + mineNeighbor.toString() 
+            System.out.println("Trying to unflag " + mineNeighbor.toString() 
                     + " after game over correctly caused IllegalStateException");
             String excMsg = ise.getMessage();
             System.out.println("\"" + excMsg + "\"");
@@ -373,13 +361,91 @@ public class BoardTest {
     @Test
     public void testMakeBoard() {
         System.out.println("makeBoard");
-//        int numberOfMines = 0;
-//        Position maxPosition = null;
-//        Board expResult = null;
-//        Board result = Board.makeBoard(numberOfMines, maxPosition);
-//        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        Position maxPos = PositionTest.makePosition();
+        int numberOfMines = maxPos.getX() * maxPos.getY();
+        Board board = Board.makeBoard(numberOfMines, maxPos);
+        Optional<Mine> option;
+        Position currLoc = POSITION_ZERO;
+        PositionStatus status;
+        String msg;
+        while (currLoc.isWithinBounds(maxPos) && board.gameUnderway()) {
+            status = board.query(currLoc);
+            if (status.equals(PositionStatus.COVERED)) {
+                option = board.reveal(currLoc);
+                if (option.isPresent()) {
+                    msg = "Oops, stepped on mine at " + currLoc.toString();
+                    assert !board.gameUnderway() : msg;
+                }
+            }
+            currLoc = currLoc.nextColumnWithReset(maxPos);
+        }
+        msg = "Board should have had a mine that detonated and ended the game";
+        assert !board.gameUnderway() : msg;
+    }
+    
+    /**
+     * Another test of makeBoard function, of class Board.
+     */
+    @Test
+    public void testMakeBoardRejectsNegativeNumberOfMines() {
+        int negativeNumber = (int) Math.floor(Math.random() * (-20)) - 5;
+        Position maxPosition = PositionTest.makePosition();
+        try {
+            Board badBoard = Board.makeBoard(negativeNumber, maxPosition);
+            String msg = "Should not have been able to create board " 
+                    + badBoard.toString() + " with " + negativeNumber + " mines";
+            fail(msg);
+        } catch (IllegalArgumentException iae) {
+            System.out.println(negativeNumber
+                    + " mines correctly caused IllegalArgumentException");
+            System.out.println("\"" + iae.getMessage() + "\"");
+        } catch (RuntimeException re) {
+            String msg = re.getClass().getName() 
+                    + " is the wrong exception to throw for " + negativeNumber 
+                    + " mines";
+            fail(msg);
+        }
+    }
+    
+    /**
+     * Another test of makeBoard function, of class Board.
+     */
+    @Test
+    public void testMakeBoardRejectsExcessiveNumberOfMines() {
+        int sideLength = (int) Math.floor(Math.random() * 20) + 5;
+        int numberOfMines = sideLength * sideLength + 1;
+        Position maxPosition = new Position(sideLength - 1, sideLength - 1);
+        try {
+            Board badBoard = Board.makeBoard(numberOfMines, maxPosition);
+            String msg = "Should not have been able to create board " 
+                    + badBoard.toString() + " that is " + sideLength + " by " 
+                    + sideLength + " with " + numberOfMines + " mines";
+            fail(msg);
+        } catch (IllegalArgumentException iae) {
+            System.out.println("Trying to make " + sideLength + " by " 
+                    + sideLength + " board with " + numberOfMines 
+                    + " mines correctly caused IllegalArgumentException");
+            System.out.println("\"" + iae.getMessage() + "\"");
+        } catch (RuntimeException re) {
+            String msg = re.getClass().getName() 
+                    + " is the wrong exception to throw for trying to create "
+                    + sideLength + " by " + sideLength + " board with " 
+                    + numberOfMines + " mines";
+            fail(msg);
+        }
+    }
+    
+    /**
+     * Test of gameUnderway function, of class Board.
+     */
+    @Test
+    public void testGameUnderway() {
+        System.out.println("gameUnderway");
+        Position maxPos = PositionTest.makePosition();
+        HashSet<Position> mineLocs = new HashSet<>();
+        Board board = new Board(maxPos, mineLocs);
+        String msg = "Game should be considered to be underway";
+        assert board.gameUnderway() : msg;
     }
     
     /**
@@ -394,6 +460,112 @@ public class BoardTest {
         board.reveal(POSITION_ZERO);
         String msg = "Game should be considered over after detonating mine";
         assert !board.gameUnderway() : msg;
+    }
+    
+    @Test
+    public void testGameWon() {
+        System.out.println("gameWon");
+        Position maxPos = PositionTest.makePosition();
+        HashSet<Position> mineLocs = new HashSet<>();
+        Position mineLoc = POSITION_ZERO;
+        while (mineLoc.isWithinBounds(maxPos)) {
+            mineLocs.add(mineLoc);
+            mineLoc = mineLoc.nextRow();
+        }
+        Board board = new Board(maxPos, mineLocs);
+        mineLoc = POSITION_ZERO;
+        while (mineLoc.isWithinBounds(maxPos)) {
+            board.flag(mineLoc);
+            mineLoc = mineLoc.nextRow();
+        }
+        String msg = "With all mines from " + POSITION_ZERO.toString() 
+                + " stopping short of " + mineLoc.toString() 
+                + " flagged, the game should be considered won";
+        assert board.gameWon() : msg;
+        assert !board.gameUnderway() : msg;
+    }
+    
+    @Test
+    public void testGameLost() {
+        Position maxPos = PositionTest.makePosition();
+        HashSet<Position> mineLocs = new HashSet<>();
+        Position mineLoc = POSITION_ZERO;
+        while (mineLoc.isWithinBounds(maxPos)) {
+            mineLocs.add(mineLoc);
+            mineLoc = mineLoc.nextRow();
+        }
+        Board board = new Board(maxPos, mineLocs);
+        Optional<Mine> option = board.reveal(POSITION_ZERO);
+        String msg = "Option for position " + POSITION_ZERO.toString() 
+                + " should contain a detonated mine";
+        assert option.isPresent() : msg;
+        assert option.get().hasBeenDetonated() : msg;
+        msg = "Detonated mine means game over and lost";
+        assert !board.gameUnderway() : msg;
+        assert !board.gameWon() : msg;
+    }
+    
+    @Test
+    public void testCanStillWinAfterBadFlag() {
+        int maxColumn = (int) Math.floor(Math.random() * 10) + 8;
+        Position maxPos = new Position(1, maxColumn);
+        HashSet<Position> mineLocs = new HashSet<>();
+        Position mineLoc = new Position(1, 0);
+        while (mineLoc.isWithinBounds(maxPos)) {
+            mineLocs.add(mineLoc);
+            mineLoc = mineLoc.nextColumn();
+        }
+        Board board = new Board(maxPos, mineLocs);
+        Position wrongMineLoc = new Position(0, maxColumn - 3);
+        board.flag(wrongMineLoc);
+        mineLoc = wrongMineLoc.nextRowColumnZero();
+        while (mineLoc.isWithinBounds(maxPos)) {
+            board.flag(mineLoc);
+            mineLoc = mineLoc.nextColumn();
+        }
+        String msg = "Because of wrong flag on " + wrongMineLoc.toString() 
+                + ", the game should still be ongoing";
+        assert board.gameUnderway() : msg;
+        board.unflag(wrongMineLoc);
+        msg = "Now that wrong location " + wrongMineLoc.toString() 
+                + " has been unflagged, game should be over and won";
+        assert !board.gameUnderway() : msg;
+        assert board.gameWon() : msg;
+    }
+    
+    /**
+     * Test of the constructor.
+     */
+    @Test
+    public void testConstructorRejectsOutOfBoundsMines() {
+        System.out.println("Constructor");
+        Position maxPos = PositionTest.makePosition();
+        Position badMineLoc = maxPos.nextColumn().nextRow();
+        HashSet<Position> mineLocs = new HashSet<>();
+        mineLocs.add(badMineLoc);
+        try {
+            Board badBoard = new Board(maxPos, mineLocs);
+            String msg = "Should not have been able to create board " 
+                    + badBoard.toString() + " with mine at position " 
+                    + badMineLoc.toString() 
+                    + ", which is beyond supposed maximum position " 
+                    + maxPos.toString();
+            fail(msg);
+        } catch (IllegalArgumentException iae) {
+            System.out.println("Trying to place mine at " 
+                    + badMineLoc.toString() 
+                    + ", which is beyond supposed maximum position " 
+                    + maxPos.toString() 
+                    + " correctly caused IllegalArgumentException");
+            System.out.println("\"" + iae.getMessage() + "\"");
+        } catch (RuntimeException re) {
+            String msg = re.getClass().getName() 
+                    + " is the wrong exception to throw for mine location " 
+                    + badMineLoc.toString() 
+                    + ", which is beyond supposed maximum position " 
+                    + maxPos.toString();
+            fail(msg);
+        }
     }
     
 }

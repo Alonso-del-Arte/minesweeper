@@ -18,6 +18,7 @@ package minesweeper;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Optional;
 
 /**
@@ -41,10 +42,22 @@ public class Board {
     
     private final HashMap<Position, Integer> neighborCounts = new HashMap<>();
     
+    private final int mineCount;
+    
+    private int goodFlagCount = 0;
+    
+    private int wrongFlagCount = 0;
+    
     private boolean gameOver = false;
+    
+    private boolean gameLost = false;
     
     public boolean gameUnderway() {
         return !this.gameOver;
+    }
+    
+    public boolean gameWon() {
+        return this.gameOver && !this.gameLost;
     }
 
     public PositionStatus query(Position position) {
@@ -150,6 +163,7 @@ public class Board {
             option.get().detonate();
             this.statuses.put(position, PositionStatus.DETONATED);
             this.gameOver = true;
+            this.gameLost = true;
         } else {
             int neighborCount = this.neighborCounts.get(position);
             status = STATUS_VALUES[neighborCount];
@@ -159,6 +173,12 @@ public class Board {
             }
         }
         return option;
+    }
+    
+    private void checkIfWon() {
+        if (this.goodFlagCount == this.mineCount && this.wrongFlagCount == 0) {
+            this.gameOver = true;
+        }
     }
     
     public void flag(Position position) {
@@ -176,26 +196,68 @@ public class Board {
         Optional<Flag> option = Optional.of(flag);
         this.flags.put(position, option);
         this.statuses.put(position, PositionStatus.FLAGGED);
+        if (correctness) {
+            this.goodFlagCount++;
+        } else {
+            this.wrongFlagCount++;
+        }
+        this.checkIfWon();
     }
     
     public void unflag(Position position) {
         if (this.gameOver) {
-            String excMsg = "Game over; can't flag any positions";
+            String excMsg = "Game over; can't unflag any positions";
             throw new IllegalStateException(excMsg);
         }
-        if (!this.flags.get(position).isPresent()) {
+        Optional<Flag> option = this.flags.get(position);
+        if (!option.isPresent()) {
             String excMsg = "Position " + position.toString() 
                     + " can't be unflagged because it's not currently flagged";
             throw new IllegalStateException(excMsg);
         }
+        Flag flag = option.get();
+        if (flag.isCorrect()) {
+            this.goodFlagCount--;
+        } else {
+            this.wrongFlagCount--;
+        }
         this.flags.put(position, Optional.empty());
         this.statuses.put(position, PositionStatus.COVERED);
+        this.checkIfWon();
     }
     
     // STUB TO FAIL THE FIRST TEST
     public static Board makeBoard(int numberOfMines, Position maxPosition) {
+        if (numberOfMines < 0) {
+            String excMsg = "Number of mines " + numberOfMines
+                    + " is not valid, should be at least 0";
+            throw new IllegalArgumentException(excMsg);
+        }
+        int capacity = (maxPosition.getX() + 1) * (maxPosition.getY() + 1);
+        if (numberOfMines > capacity) {
+            String excMsg = "Can't make board with " + numberOfMines 
+                    + " mines but capacity for only " + capacity;
+            throw new IllegalArgumentException(excMsg);
+        }
         HashSet<Position> mineLocations = new HashSet<>();
+        Position mineLocation;
+        while (mineLocations.size() < numberOfMines) {
+            mineLocation = Position.random(maxPosition);
+            mineLocations.add(mineLocation);
+        }
         return new Board(maxPosition, mineLocations);
+    }
+    
+    private static boolean anyOutOfBounds(Position maxPos, 
+            HashSet<Position> positions) {
+        boolean boundFlag = true;
+        Iterator iter = positions.iterator();
+        Position curr;
+        while (boundFlag && iter.hasNext()) {
+            curr = (Position) iter.next();
+            boundFlag = curr.isWithinBounds(maxPos);
+        }
+        return !boundFlag;
     }
     
     private void setStatuses() {
@@ -246,6 +308,11 @@ public class Board {
     }
     
     Board(Position maxPos, HashSet<Position> mineLocations) {
+        if (anyOutOfBounds(maxPos, mineLocations)) {
+            String excMsg = "All mine locations should be within bounds";
+            throw new IllegalArgumentException(excMsg);
+        }
+        this.mineCount = mineLocations.size();
         this.maxCorner = maxPos;
         this.setStatuses();
         this.prepFieldForFlagging();
