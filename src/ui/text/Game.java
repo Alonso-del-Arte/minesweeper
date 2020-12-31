@@ -32,9 +32,59 @@ public class Game {
     
     // TODO: Implement the Minesweeper game as a command line program
     
+    private static Board gameBoard;
+    
+    private static void writeBoard() {
+        Position curr;
+        PositionStatus status;
+        System.out.println(" ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+        for (int x = 0; x < 10; x++) {
+            System.out.print(x);
+            for (int y = 0; y < 26; y++) {
+                curr = new Position(x, y);
+                status = gameBoard.query(curr);
+                System.out.print(status.getChar());
+            }
+            System.out.println();
+        }
+    }
+    
+    /**
+     * Parses a <code>String</code> to determine a <code>Position</code> on the 
+     * 10 &times; 26 board. This function is package private, rather than fully 
+     * class private, to enable unit testing.
+     * @param s The <code>String</code> to parse. For example, "A7".
+     * @return The corresponding <code>Position</code>. For example, (7, 0).
+     * @throws IllegalArgumentException If parsing leads to an attempt to 
+     * construct a <code>Position</code> object with negative coordinates.
+     */
+    static Position parsePosition(String s) {
+        char letter = s.charAt(0);
+        char digit = s.charAt(1);
+        if (Character.isAlphabetic(digit)) {
+            char swap = letter;
+            letter = digit;
+            digit = swap;
+        }
+        return new Position(digit - 48, letter - 65);
+    }
+    
+    private static void parseCommand(String command) {
+        command = command.replace(" ", "").toUpperCase();
+    }
+    
     public static void main(String[] args) {
-        System.out.println("Sorry, text UI is not ready yet");
-//        Scanner input = new Scanner(System.in);
+        System.out.println();
+        System.out.println("MINESWEEPER");
+        System.out.println();
+        Position maxPosition = new Position(9, 25);
+        gameBoard = Board.makeBoard(0, maxPosition);
+        writeBoard();
+        try (Scanner input = new Scanner(System.in)) {
+            while (gameBoard.gameUnderway()) {
+                //
+            }
+        }
     }
     
 }
