@@ -226,7 +226,13 @@ public class Board {
         this.checkIfWon();
     }
     
-    // STUB TO FAIL THE FIRST TEST
+    /**
+     * Creates a new board.
+     * @param numberOfMines How many mines the board should have. Preferably a 
+     * positive zero, but 0 is allowed.
+     * @param maxPosition The bottom right corner position.
+     * @return A new board, with the mines chosen pseudorandomly.
+     */
     public static Board makeBoard(int numberOfMines, Position maxPosition) {
         if (numberOfMines < 0) {
             String excMsg = "Number of mines " + numberOfMines
@@ -307,6 +313,11 @@ public class Board {
         }
     }
     
+    /**
+     * Sole constructor.
+     * @param maxPos The position of the bottom right corner.
+     * @param mineLocations A set of locations where to place the mines.
+     */
     Board(Position maxPos, HashSet<Position> mineLocations) {
         if (anyOutOfBounds(maxPos, mineLocations)) {
             String excMsg = "All mine locations should be within bounds";

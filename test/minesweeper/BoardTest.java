@@ -69,6 +69,58 @@ public class BoardTest {
             assertEquals(statuses[n], board.query(centerSquare));
         }
     }
+    
+    /**
+     * Another test of query function, of class Board.
+     */
+    @Test
+    public void testQueryShowsWrongFlagAfterLosing() {
+        Position mineLoc1 = POSITION_ZERO;
+        Position mineLoc2 = mineLoc1.nextRow();
+        Position notAMineLoc = mineLoc1.nextColumn();
+        HashSet<Position> mineLocs = new HashSet<>();
+        mineLocs.add(mineLoc1);
+        mineLocs.add(mineLoc2);
+        Position maxPos = mineLoc2.nextColumn();
+        Board board = new Board(maxPos, mineLocs);
+        board.flag(mineLoc1);
+        board.flag(notAMineLoc);
+        board.reveal(mineLoc2);
+        String msg = "Detonating mine at " + mineLoc2.toString() 
+                + " should have ended game in a loss";
+        assert !board.gameUnderway() : msg;
+        assert !board.gameWon() : msg;
+        assertEquals(PositionStatus.FLAGGED, board.query(mineLoc1));
+        assertEquals(PositionStatus.DETONATED, board.query(mineLoc2));
+        assertEquals(PositionStatus.WRONGLY_FLAGGED, board.query(notAMineLoc));
+    }
+
+    /**
+     * Another test of query function, of class Board.
+     */
+    @Test
+    public void testQueryShowsUndetonatedUnflaggedMineAfterLosing() {
+        Position mineLoc1 = POSITION_ZERO;
+        Position mineLoc2 = mineLoc1.nextRow();
+        Position mineLoc3 = mineLoc2.nextRow();
+        Position notAMineLoc = mineLoc3.nextColumn();
+        HashSet<Position> mineLocs = new HashSet<>();
+        mineLocs.add(mineLoc1);
+        mineLocs.add(mineLoc2);
+        mineLocs.add(mineLoc3);
+        Position maxPos = notAMineLoc.nextColumn();
+        Board board = new Board(maxPos, mineLocs);
+        board.flag(mineLoc1);
+        board.flag(notAMineLoc);
+        board.reveal(mineLoc2);
+        String msg = "Detonating mine at " + mineLoc2.toString() 
+                + " should have ended game in a loss";
+        assert !board.gameUnderway() : msg;
+        assert !board.gameWon() : msg;
+        assertEquals(PositionStatus.FLAGGED, board.query(mineLoc1));
+        assertEquals(PositionStatus.DETONATED, board.query(mineLoc2));
+        assertEquals(PositionStatus.REVEALED_MINED, board.query(mineLoc3));
+    }
 
     /**
      * Test of reveal function, of class Board.
@@ -462,6 +514,9 @@ public class BoardTest {
         assert !board.gameUnderway() : msg;
     }
     
+    /**
+     * Test of gameWon function, of class Board.
+     */
     @Test
     public void testGameWon() {
         System.out.println("gameWon");
@@ -485,6 +540,9 @@ public class BoardTest {
         assert !board.gameUnderway() : msg;
     }
     
+    /**
+     * Another test of gameWon function, of class Board.
+     */
     @Test
     public void testGameLost() {
         Position maxPos = PositionTest.makePosition();
@@ -505,6 +563,13 @@ public class BoardTest {
         assert !board.gameWon() : msg;
     }
     
+    /**
+     * Another test of gameWon function, of class Board. The player should not 
+     * be able to win simply by flagging every position. To win, the player must 
+     * only flag mined positions and not flag empty positions. However, the 
+     * player may win even after flagging an incorrect position by unflagging 
+     * it, if all the remaining flags are on all the correct positions.
+     */
     @Test
     public void testCanStillWinAfterBadFlag() {
         int maxColumn = (int) Math.floor(Math.random() * 10) + 8;
