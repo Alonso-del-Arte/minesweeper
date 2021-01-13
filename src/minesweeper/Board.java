@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alonso del Arte
+ * Copyright (C) 2021 Alonso del Arte
  *
  * This program is free software: you can redistribute it and/or modify it under 
  * the terms of the GNU General Public License as published by the Free Software 
@@ -19,6 +19,7 @@ package minesweeper;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 /**
@@ -52,16 +53,45 @@ public class Board {
     
     private boolean gameLost = false;
     
+    /**
+     * Tells whether the game is underway or not. If no mine has detonated, and 
+     * there are mines left to flag or positions without mines to unflag, the 
+     * game continues.
+     * @return True if the game is going on, false if the player has won or 
+     * lost.
+     */
     public boolean gameUnderway() {
         return !this.gameOver;
     }
     
+    /**
+     * Tells whether or not the game has been won or not. This function may be 
+     * called at any time after board construction.
+     * @return True if the player won, false if the player lost or if the game 
+     * is still going on.
+     */
     public boolean gameWon() {
         return this.gameOver && !this.gameLost;
     }
 
+    /**
+     * Retrieves the current status of a position. Note that this function may 
+     * be called at any time after construction, including after the player has 
+     * won or lost the game, in order to reveal wrongly flagged positions and 
+     * mines that have not been detonated nor flagged.
+     * @param position The position to query. For example, (4, 7).
+     * @return The status of the position: covered, detonated, flagged, revealed 
+     * empty or revealed mined.
+     * @throws NoSuchElementException If <code>position</code> is out of bounds.
+     */
     public PositionStatus query(Position position) {
-        return this.statuses.get(position);
+        if (position.isWithinBounds(this.maxCorner)) {
+            return this.statuses.get(position);
+        } else {
+            String excMsg = "Position " + position.toString() 
+                    + " is beyond maximum corner " + this.maxCorner.toString();
+            throw new NoSuchElementException(excMsg);
+        }
     }
     
     private void revealEmptySquare(Position position) {
@@ -138,6 +168,34 @@ public class Board {
         });
     }
     
+    private void gradeFlags() {
+        Flag currFlag;
+        for (Position currPos = TOP_LEFT_CORNER; 
+                currPos.isWithinBounds(this.maxCorner); 
+                currPos = currPos.nextColumnWithReset(this.maxCorner)) {
+            if (this.flags.get(currPos).isPresent()) {
+                currFlag = this.flags.get(currPos).get();
+                if (!currFlag.isCorrect()) {
+                    this.statuses.put(currPos, PositionStatus.WRONGLY_FLAGGED);
+                }
+            }
+        }
+    }
+    
+    private void showUndetonatedMines() {
+        PositionStatus status;
+        for (Position currPos = TOP_LEFT_CORNER; 
+                currPos.isWithinBounds(this.maxCorner); 
+                currPos = currPos.nextColumnWithReset(this.maxCorner)) {
+            if (this.mines.get(currPos).isPresent()) {
+                status = this.statuses.get(currPos);
+                if (status.equals(PositionStatus.COVERED)) {
+                    this.statuses.put(currPos, PositionStatus.REVEALED_MINED);
+                }
+            }
+        }
+    }
+    
     /**
      * Uncovers a position, potentially revealing a mine, but more hopefully 
      * revealing neighbor counts, or a large swath of adjacent empty squares. 
@@ -146,33 +204,44 @@ public class Board {
      * @param position The position to uncover.
      * @return An <code>Optional</code> object that is either empty or it 
      * contains a <code>Mine</code> object matching <code>position</code>.
+     * @throws IllegalStateException If <code>position</code> has already been 
+     * uncovered, or if the game is over.
+     * @throws NoSuchElementException If <code>position</code> is out of bounds.
      */
     public Optional<Mine> reveal(Position position) {
         if (this.gameOver) {
             String excMsg = "Game over; can't reveal any positions";
             throw new IllegalStateException(excMsg);
         }
-        PositionStatus status = this.statuses.get(position);
-        if (!status.equals(PositionStatus.COVERED)) {
-            String excMsg = "Can't reveal " + position.toString() 
-                    + " because its status is " + status.toString();
-            throw new IllegalStateException(excMsg);
-        }
-        Optional<Mine> option = this.mines.get(position);
-        if (option.isPresent()) {
-            option.get().detonate();
-            this.statuses.put(position, PositionStatus.DETONATED);
-            this.gameOver = true;
-            this.gameLost = true;
-        } else {
-            int neighborCount = this.neighborCounts.get(position);
-            status = STATUS_VALUES[neighborCount];
-            this.statuses.put(position, status);
-            if (neighborCount == 0) {
-                revealEmptyNeighbors(position);
+        if (position.isWithinBounds(this.maxCorner)) {
+            PositionStatus status = this.statuses.get(position);
+            if (!status.equals(PositionStatus.COVERED)) {
+                String excMsg = "Can't reveal " + position.toString() 
+                        + " because its status is " + status.toString();
+                throw new IllegalStateException(excMsg);
             }
+            Optional<Mine> option = this.mines.get(position);
+            if (option.isPresent()) {
+                option.get().detonate();
+                this.statuses.put(position, PositionStatus.DETONATED);
+                this.gradeFlags();
+                this.showUndetonatedMines();
+                this.gameOver = true;
+                this.gameLost = true;
+            } else {
+                int neighborCount = this.neighborCounts.get(position);
+                status = STATUS_VALUES[neighborCount];
+                this.statuses.put(position, status);
+                if (neighborCount == 0) {
+                    revealEmptyNeighbors(position);
+                }
+            }
+            return option;
+        } else {
+            String excMsg = "Position " + position.toString() 
+                    + " is beyond maximum corner " + this.maxCorner.toString();
+            throw new NoSuchElementException(excMsg);
         }
-        return option;
     }
     
     private void checkIfWon() {
@@ -181,57 +250,84 @@ public class Board {
         }
     }
     
+    /**
+     * Flags a position.
+     * @param position The position to flag. For example, (4, 7).
+     * @throws IllegalStateException If the position is already flagged, or if 
+     * the game is over.
+     * @throws NoSuchElementException If <code>position</code> is out of bounds.
+     */
     public void flag(Position position) {
         if (this.gameOver) {
             String excMsg = "Game over; can't flag any positions";
             throw new IllegalStateException(excMsg);
         }
-        if (this.flags.get(position).isPresent()) {
-            String excMsg = "Position " + position.toString() 
-                    + " is already flagged";
-            throw new IllegalStateException(excMsg);
-        }
-        boolean correctness = this.mines.get(position).isPresent();
-        Flag flag = new Flag(position, correctness);
-        Optional<Flag> option = Optional.of(flag);
-        this.flags.put(position, option);
-        this.statuses.put(position, PositionStatus.FLAGGED);
-        if (correctness) {
-            this.goodFlagCount++;
+        if (position.isWithinBounds(this.maxCorner)) {
+            if (this.flags.get(position).isPresent()) {
+                String excMsg = "Position " + position.toString() 
+                        + " is already flagged";
+                throw new IllegalStateException(excMsg);
+            }
+            boolean correctness = this.mines.get(position).isPresent();
+            Flag flag = new Flag(position, correctness);
+            Optional<Flag> option = Optional.of(flag);
+            this.flags.put(position, option);
+            this.statuses.put(position, PositionStatus.FLAGGED);
+            if (correctness) {
+                this.goodFlagCount++;
+            } else {
+                this.wrongFlagCount++;
+            }
+            this.checkIfWon();
         } else {
-            this.wrongFlagCount++;
+            String excMsg = "Position " + position.toString() 
+                    + " is beyond maximum corner " + this.maxCorner.toString();
+            throw new NoSuchElementException(excMsg);
         }
-        this.checkIfWon();
     }
     
+    /**
+     * Unflags a position. The position must be currently flagged.
+     * @param position The position to unflag. For example, (4, 7).
+     * @throws IllegalStateException If the position is not flagged already, or  
+     * if the game is over.
+     * @throws NoSuchElementException If <code>position</code> is out of bounds.
+     */
     public void unflag(Position position) {
         if (this.gameOver) {
             String excMsg = "Game over; can't unflag any positions";
             throw new IllegalStateException(excMsg);
         }
-        Optional<Flag> option = this.flags.get(position);
-        if (!option.isPresent()) {
-            String excMsg = "Position " + position.toString() 
-                    + " can't be unflagged because it's not currently flagged";
-            throw new IllegalStateException(excMsg);
-        }
-        Flag flag = option.get();
-        if (flag.isCorrect()) {
-            this.goodFlagCount--;
+        if (position.isWithinBounds(this.maxCorner)) {
+            Optional<Flag> option = this.flags.get(position);
+            if (!option.isPresent()) {
+                String excMsg = "Position " + position.toString() 
+                        + " can't be unflagged, it's not currently flagged";
+                throw new IllegalStateException(excMsg);
+            }
+            Flag flag = option.get();
+            if (flag.isCorrect()) {
+                this.goodFlagCount--;
+            } else {
+                this.wrongFlagCount--;
+            }
+            this.flags.put(position, Optional.empty());
+            this.statuses.put(position, PositionStatus.COVERED);
+            this.checkIfWon();
         } else {
-            this.wrongFlagCount--;
+            String excMsg = "Position " + position.toString() 
+                    + " is beyond maximum corner " + this.maxCorner.toString();
+            throw new NoSuchElementException(excMsg);
         }
-        this.flags.put(position, Optional.empty());
-        this.statuses.put(position, PositionStatus.COVERED);
-        this.checkIfWon();
     }
     
     /**
-     * Creates a new board.
+     * Creates a new board, with a specified number of mines. The board is 
+     * rectangular.
      * @param numberOfMines How many mines the board should have. Preferably a 
-     * positive zero, but 0 is allowed.
+     * positive number, but 0 is allowed.
      * @param maxPosition The bottom right corner position.
-     * @return A new board, with the mines chosen pseudorandomly.
+     * @return A new board, with the mines' positions chosen pseudorandomly.
      */
     public static Board makeBoard(int numberOfMines, Position maxPosition) {
         if (numberOfMines < 0) {

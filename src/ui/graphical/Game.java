@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alonso del Arte
+ * Copyright (C) 2021 Alonso del Arte
  *
  * This program is free software: you can redistribute it and/or modify it under 
  * the terms of the GNU General Public License as published by the Free Software 
@@ -16,6 +16,12 @@
  */
 package ui.graphical;
 
+import java.awt.Dimension;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
 /**
  *
  * @author Alonso del Arte
@@ -25,7 +31,18 @@ public class Game {
     // TODO: Implement the Minesweeper game as a Java Swing program.
     
     public static void main(String[] args) {
-        System.out.println("Sorry, graphical UI is not ready yet");
+        JFrame frame = new JFrame("Minesweeper PLACEHOLDER");
+        JPanel panel = new JPanel();
+        String text = "Sorry, graphical UI is not ready yet";
+        panel.add(new JLabel(text));
+        panel.add(new JLabel(text));
+        panel.add(new JLabel(text));
+        Dimension dimension = new Dimension(360, 240);
+        frame.setPreferredSize(dimension);
+        frame.add(panel);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.pack();
+        frame.setVisible(true);
     }
     
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alonso del Arte
+ * Copyright (C) 2021 Alonso del Arte
  *
  * This program is free software: you can redistribute it and/or modify it under 
  * the terms of the GNU General Public License as published by the Free Software 
@@ -18,6 +18,7 @@ package minesweeper;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.junit.Test;
@@ -67,6 +68,59 @@ public class BoardTest {
             option = board.reveal(centerSquare);
             assert !option.isPresent() : "Center square should be empty";
             assertEquals(statuses[n], board.query(centerSquare));
+        }
+    }
+    
+    /**
+     * Another test of query function, of class Board. Queries for out of bounds 
+     * positions should cause <code>NoSuchElementException</code>.
+     */
+    @Test
+    public void testNoQueryOutOfBounds() {
+        Position nextToCorner = PositionTest.makePosition();
+        Position corner = nextToCorner.nextColumn();
+        HashSet<Position> mineLocs = new HashSet<>();
+        mineLocs.add(nextToCorner);
+        mineLocs.add(corner);
+        Board board = new Board(corner, mineLocs);
+        Position outOfBounds = corner.nextColumn().nextRow();
+        try {
+            PositionStatus badStatus = board.query(outOfBounds);
+            String msg = "Trying to query position " + outOfBounds.toString() 
+                    + ", which is beyond corner " + corner.toString() 
+                    + " should have caused an exception, not given result " 
+                    + badStatus.name();
+            fail(msg);
+        } catch (NoSuchElementException nsee) {
+            System.out.println("Trying to query " + outOfBounds.toString() 
+                    + ", which is beyond " + corner.toString() 
+                    + " correctly caused NoSuchElementException");
+            System.out.println("\"" + nsee.getMessage() + "\"");
+        } catch (RuntimeException re) {
+            String msg = re.getClass().getName() 
+                    + " is the wrong exception to throw for trying to query " 
+                    + outOfBounds.toString() + ", which is beyond " 
+                    + corner.toString();
+            fail(msg);
+        }
+    }
+
+    /**
+     * Another test of query function, of class Board.
+     */
+    @Test
+    public void testMayQueryAfterWinning() {
+        HashSet<Position> mineLocs = new HashSet<>();
+        mineLocs.add(POSITION_ZERO);
+        Board board = new Board(POSITION_ZERO, mineLocs);
+        board.flag(POSITION_ZERO);
+        try {
+            PositionStatus status = board.query(POSITION_ZERO);
+            assertEquals(PositionStatus.FLAGGED, status);
+        } catch (RuntimeException re) {
+            String msg = "Querying after winning should not have caused " 
+                    + re.getClass().getName();
+            fail(msg);
         }
     }
     
@@ -168,7 +222,7 @@ public class BoardTest {
             }
             presumedEmpty = new Position(x, minedColumnY - 1);
             msg = "Position " + presumedEmpty.toString() 
-                    + " should be empty but it should neighbor at least two mines";
+                    + " should be empty but neighbor at least two mines";
             char neighborCount = board.query(presumedEmpty).getChar();
             assert neighborCount > '1' && neighborCount < '4' : msg;
         }
@@ -203,6 +257,40 @@ public class BoardTest {
             msg = re.getClass().getName() 
                     + " is the wrong exception to throw for trying to reveal " 
                     + mineNeighbor.toString() + " twice";
+            fail(msg);
+        }
+    }
+
+    /**
+     * Another test of reveal function, of class Board. Trying to reveal out of 
+     * bounds positions should cause <code>NoSuchElementException</code>.
+     */
+    @Test
+    public void testNoRevealOutOfBounds() {
+        Position nextToCorner = PositionTest.makePosition();
+        Position corner = nextToCorner.nextColumn();
+        HashSet<Position> mineLocs = new HashSet<>();
+        mineLocs.add(nextToCorner);
+        mineLocs.add(corner);
+        Board board = new Board(corner, mineLocs);
+        Position outOfBounds = corner.nextColumn().nextRow();
+        try {
+            Optional<Mine> badOption = board.reveal(outOfBounds);
+            String msg = "Trying to reveal position " + outOfBounds.toString() 
+                    + ", which is beyond corner " + corner.toString() 
+                    + " should have caused an exception, not given result " 
+                    + badOption.toString();
+            fail(msg);
+        } catch (NoSuchElementException nsee) {
+            System.out.println("Trying to reveal " + outOfBounds.toString() 
+                    + ", which is beyond " + corner.toString() 
+                    + " correctly caused NoSuchElementException");
+            System.out.println("\"" + nsee.getMessage() + "\"");
+        } catch (RuntimeException re) {
+            String msg = re.getClass().getName() 
+                    + " is the wrong exception to throw for trying to reveal " 
+                    + outOfBounds.toString() + ", which is beyond " 
+                    + corner.toString();
             fail(msg);
         }
     }
@@ -258,7 +346,7 @@ public class BoardTest {
         board.flag(POSITION_ZERO);
         assertEquals(PositionStatus.FLAGGED, board.query(POSITION_ZERO));
     }
-
+    
     /**
      * Test of unflag procedure, of class Board.
      */
@@ -299,6 +387,39 @@ public class BoardTest {
             String msg = re.getClass().getName() 
                     + " is the wrong exception to throw for trying to flag " 
                     + mineLoc.toString() + " twice";
+            fail(msg);
+        }
+    }
+    
+    /**
+     * Another test of flag procedure, of class Board. Trying to flag out of 
+     * bounds positions should cause <code>NoSuchElementException</code>.
+     */
+    @Test
+    public void testNoFlagOutOfBounds() {
+        Position nextToCorner = PositionTest.makePosition();
+        Position corner = nextToCorner.nextColumn();
+        HashSet<Position> mineLocs = new HashSet<>();
+        mineLocs.add(nextToCorner);
+        mineLocs.add(corner);
+        Board board = new Board(corner, mineLocs);
+        Position outOfBounds = corner.nextColumn().nextRow();
+        try {
+            board.flag(outOfBounds);
+            String msg = "Should not have been able to flag " 
+                    + outOfBounds.toString() + ", which is beyond corner " 
+                    + corner.toString();
+            fail(msg);
+        } catch (NoSuchElementException nsee) {
+            System.out.println("Trying to flag " + outOfBounds.toString() 
+                    + ", which is beyond " + corner.toString() 
+                    + " correctly caused NoSuchElementException");
+            System.out.println("\"" + nsee.getMessage() + "\"");
+        } catch (RuntimeException re) {
+            String msg = re.getClass().getName() 
+                    + " is the wrong exception to throw for trying to flag " 
+                    + outOfBounds.toString() + ", which is beyond " 
+                    + corner.toString();
             fail(msg);
         }
     }
@@ -363,6 +484,39 @@ public class BoardTest {
             String msg = re.getClass().getName() 
                     + " is the wrong exception to throw for trying to unflag " 
                     + mineLoc.toString() + " twice";
+            fail(msg);
+        }
+    }
+
+    /**
+     * Another test of unflag procedure, of class Board. Trying to unflag out of 
+     * bounds positions should cause <code>NoSuchElementException</code>.
+     */
+    @Test
+    public void testNoUnflagOutOfBounds() {
+        Position nextToCorner = PositionTest.makePosition();
+        Position corner = nextToCorner.nextColumn();
+        HashSet<Position> mineLocs = new HashSet<>();
+        mineLocs.add(nextToCorner);
+        mineLocs.add(corner);
+        Board board = new Board(corner, mineLocs);
+        Position outOfBounds = corner.nextColumn().nextRow();
+        try {
+            board.unflag(outOfBounds);
+            String msg = "Should not have been able to unflag " 
+                    + outOfBounds.toString() + ", which is beyond corner " 
+                    + corner.toString();
+            fail(msg);
+        } catch (NoSuchElementException nsee) {
+            System.out.println("Trying to unflag " + outOfBounds.toString() 
+                    + ", which is beyond " + corner.toString() 
+                    + " correctly caused NoSuchElementException");
+            System.out.println("\"" + nsee.getMessage() + "\"");
+        } catch (RuntimeException re) {
+            String msg = re.getClass().getName() 
+                    + " is the wrong exception to throw for trying to unflag " 
+                    + outOfBounds.toString() + ", which is beyond " 
+                    + corner.toString();
             fail(msg);
         }
     }

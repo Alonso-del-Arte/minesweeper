@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alonso del Arte
+ * Copyright (C) 2021 Alonso del Arte
  *
  * This program is free software: you can redistribute it and/or modify it under 
  * the terms of the GNU General Public License as published by the Free Software 
@@ -26,6 +26,9 @@ import static org.junit.Assert.*;
  */
 public class PositionStatusTest {
     
+    /**
+     * Test of the getChar function, of the class PositionStatus.
+     */
     @Test
     public void testGetChar() {
         System.out.println("getChar");
@@ -43,6 +46,38 @@ public class PositionStatusTest {
         assertEquals('!', PositionStatus.FLAGGED.getChar());
         assertEquals('w', PositionStatus.WRONGLY_FLAGGED.getChar());
         assertEquals('X', PositionStatus.DETONATED.getChar());
+    }
+    
+    /**
+     * Test of the toString function, of the class PositionStatus.
+     */
+    @Test
+    public void testToString() {
+        System.out.println("toString");
+        assertEquals("revealed empty", PositionStatus.REVEALED_EMPTY.toString());
+        assertEquals("revealed empty but neighboring one mine",
+                PositionStatus.REVEALED_EMPTY_NEAR_1.toString());
+        assertEquals("revealed empty but neighboring two mines",
+                PositionStatus.REVEALED_EMPTY_NEAR_2.toString());
+        assertEquals("revealed empty but neighboring three mines",
+                PositionStatus.REVEALED_EMPTY_NEAR_3.toString());
+        assertEquals("revealed empty but neighboring four mines",
+                PositionStatus.REVEALED_EMPTY_NEAR_4.toString());
+        assertEquals("revealed empty but neighboring five mines",
+                PositionStatus.REVEALED_EMPTY_NEAR_5.toString());
+        assertEquals("revealed empty but neighboring six mines",
+                PositionStatus.REVEALED_EMPTY_NEAR_6.toString());
+        assertEquals("revealed empty but neighboring seven mines",
+                PositionStatus.REVEALED_EMPTY_NEAR_7.toString());
+        assertEquals("revealed empty but neighboring eight mines",
+                PositionStatus.REVEALED_EMPTY_NEAR_8.toString());
+        assertEquals("covered", PositionStatus.COVERED.toString());
+        assertEquals("revealed mined", 
+                PositionStatus.REVEALED_MINED.toString());
+        assertEquals("flagged", PositionStatus.FLAGGED.toString());
+        assertEquals("wrongly flagged", 
+                PositionStatus.WRONGLY_FLAGGED.toString());
+        assertEquals("detonated", PositionStatus.DETONATED.toString());
     }
     
 }

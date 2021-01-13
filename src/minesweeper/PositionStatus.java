@@ -30,7 +30,7 @@ public enum PositionStatus {
      * on the user interface, the player might receive some indication as to the 
      * possible status of neighboring positions.
      */
-    REVEALED_EMPTY (' '),
+    REVEALED_EMPTY (' ', "revealed empty"),
     
     /**
      * Indicates the position has been revealed to not contain a mine, but it 
@@ -38,7 +38,7 @@ public enum PositionStatus {
      * receive some indication as to the possible status of neighboring 
      * positions.
      */
-    REVEALED_EMPTY_NEAR_1 ('1'),
+    REVEALED_EMPTY_NEAR_1 ('1', "revealed empty but neighboring one mine"),
     
     /**
      * Indicates the position has been revealed to not contain a mine, but it 
@@ -46,7 +46,7 @@ public enum PositionStatus {
      * receive some indication as to the possible status of neighboring 
      * positions.
      */
-    REVEALED_EMPTY_NEAR_2 ('2'),
+    REVEALED_EMPTY_NEAR_2 ('2', "revealed empty but neighboring two mines"),
     
     /**
      * Indicates the position has been revealed to not contain a mine, but it 
@@ -54,7 +54,7 @@ public enum PositionStatus {
      * receive some indication as to the possible status of neighboring 
      * positions.
      */
-    REVEALED_EMPTY_NEAR_3 ('3'),
+    REVEALED_EMPTY_NEAR_3 ('3', "revealed empty but neighboring three mines"),
     
     /**
      * Indicates the position has been revealed to not contain a mine, but it 
@@ -62,7 +62,7 @@ public enum PositionStatus {
      * receive some indication as to the possible status of neighboring 
      * positions.
      */
-    REVEALED_EMPTY_NEAR_4 ('4'),
+    REVEALED_EMPTY_NEAR_4 ('4', "revealed empty but neighboring four mines"),
     
     /**
      * Indicates the position has been revealed to not contain a mine, but it 
@@ -70,7 +70,7 @@ public enum PositionStatus {
      * receive some indication as to the possible status of neighboring 
      * positions.
      */
-    REVEALED_EMPTY_NEAR_5 ('5'),
+    REVEALED_EMPTY_NEAR_5 ('5', "revealed empty but neighboring five mines"),
     
     /**
      * Indicates the position has been revealed to not contain a mine, but it 
@@ -78,7 +78,7 @@ public enum PositionStatus {
      * receive some indication as to the possible status of neighboring 
      * positions.
      */
-    REVEALED_EMPTY_NEAR_6 ('6'),
+    REVEALED_EMPTY_NEAR_6 ('6', "revealed empty but neighboring six mines"),
     
     /**
      * Indicates the position has been revealed to not contain a mine, but it 
@@ -86,7 +86,7 @@ public enum PositionStatus {
      * receive some indication as to the possible status of neighboring 
      * positions.
      */
-    REVEALED_EMPTY_NEAR_7 ('7'),
+    REVEALED_EMPTY_NEAR_7 ('7', "revealed empty but neighboring seven mines"),
     
     /**
      * Indicates the position has been revealed to not contain a mine, but it 
@@ -94,41 +94,43 @@ public enum PositionStatus {
      * receive some indication as to the possible status of neighboring 
      * positions.
      */
-    REVEALED_EMPTY_NEAR_8 ('8'),
+    REVEALED_EMPTY_NEAR_8 ('8', "revealed empty but neighboring eight mines"),
     
     /**
      * Indicates the position is covered. It may or may not have a mine. The 
      * player has not asserted anything about the position.
      */
-    COVERED ('?'),
+    COVERED ('?', "covered"),
     
     /**
      * Indicates the position has a mine but the mine has not detonated. This 
      * status should only occur when the player has lost the game by detonating 
      * another mine in the field.
      */
-    REVEALED_MINED ('x'),
+    REVEALED_MINED ('x', "revealed mined"),
     
     /**
      * Indicates the position has been flagged because the player believes the 
      * position has a mine. Whether or not the position actually does have a 
      * mine, well, that's the fun of the game, isn't it?
      */
-    FLAGGED ('!'),
+    FLAGGED ('!', "flagged"),
     
     /**
      * Indicates the position was flagged incorrectly. Because of this mistake, 
      * the player probably stepped on a mine in another position.
      */
-    WRONGLY_FLAGGED ('w'),
+    WRONGLY_FLAGGED ('w', "wrongly flagged"),
     
     /**
      * Indicates the position has a mine that detonated. The player has lost the 
      * game.
      */
-    DETONATED ('X');
+    DETONATED ('X', "detonated");
     
     private final char symbol;
+    
+    private final String term;
     
     /**
      * Gets a character suitable for the command line version of this game.
@@ -150,9 +152,15 @@ public enum PositionStatus {
     public char getChar() {
         return this.symbol;
     }
+    
+    @Override
+    public String toString() {
+        return this.term;
+    }
 
-    private PositionStatus(char ch) {
+    private PositionStatus(char ch, String s) {
         this.symbol = ch;
+        this.term = s;
     }
         
 }

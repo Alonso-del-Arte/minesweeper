@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Alonso del Arte
+ * Copyright (C) 2021 Alonso del Arte
  *
  * This program is free software: you can redistribute it and/or modify it under 
  * the terms of the GNU General Public License as published by the Free Software 
@@ -38,14 +38,33 @@ public class MineSweeper {
     private static int specifiedBoardHeight = 0;
     
     private static boolean textGameFlag = true;
+    private static boolean useANSIColors = false;
+    
+    private static String difficultyLevel = "-medium";
     
     private static void processCommandLineArgs(String[] args) {
         boolean nextNumberIsWidth = true;
         for (String arg : args) {
             switch (arg.toLowerCase()) {
+                case "-ansi":
+                case "-ansicolors":
+                case "-ansicolor":
+                case "-color":
+                case "-colors":
+                    useANSIColors = true;
+                    break;
+                case "-easy":
+                    difficultyLevel = "-easy";
+                    break;
+                case "-hard":
+                    difficultyLevel = "-hard";
+                    break;
                 case "-h":
                 case "-height":
                     nextNumberIsWidth = false;
+                    break;
+                case "-medium":
+                    difficultyLevel = "-medium";
                     break;
                 case "-t":
                 case "-text":
@@ -87,10 +106,14 @@ public class MineSweeper {
         if (specifiedBoardHeight < 1) {
             specifiedBoardHeight = DEFAULT_BOARD_HEIGHT;
         }
-        String[] parsedArgs = new String[2];
+        String[] parsedArgs = new String[3];
         parsedArgs[0] = "width = " + specifiedBoardWidth;
         parsedArgs[1] = "height = " + specifiedBoardHeight;
+        parsedArgs[2] = difficultyLevel;
         if (textGameFlag) {
+            if (useANSIColors) {
+                parsedArgs[0] = "-colors";
+            }
             ui.text.Game.main(parsedArgs);
         } else {
             ui.graphical.Game.main(parsedArgs);
