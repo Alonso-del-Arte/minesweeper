@@ -25,8 +25,7 @@ import java.util.Optional;
 import java.util.Scanner;
 
 /**
- * WORK IN PROGRESS: Play the Minesweeper game on the command line. I'm thinking 
- * the board will be 10 &times; 26 or 26 &times; 10...
+ * Play the Minesweeper game on the command line. The board is 10 &times; 26.
  * @author Alonso del Arte
  */
 public class Game {
@@ -65,7 +64,17 @@ public class Game {
             System.out.println();
         }
     }
-    // STUB TO FAIL THE FIRST TEST
+
+    /**
+     * Chooses ANSI codes to display some game elements in colors. Note that 
+     * this does not work on the Windows command prompt.
+     * @param status The status for which to choose a color. For example, {@link 
+     * PositionStatus#FLAGGED}.
+     * @return A <code>String</code> beginning with an ANSI code and an ANSI 
+     * reset when applicable. For example, for <code>FLAGGED</code> this would 
+     * return the ANSI code for green, followed by the exclamation mark 
+     * character followed by the ANSI reset cancelling green.
+     */
     static String chooseColor(PositionStatus status) {
         String symbol;
         switch (status) {
