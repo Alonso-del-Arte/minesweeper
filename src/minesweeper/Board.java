@@ -330,23 +330,23 @@ public class Board {
      * @return A new board, with the mines' positions chosen pseudorandomly.
      */
     public static Board makeBoard(int numberOfMines, Position maxPosition) {
-        if (numberOfMines < 0) {
-            String excMsg = "Number of mines " + numberOfMines
-                    + " is not valid, should be at least 0";
-            throw new IllegalArgumentException(excMsg);
-        }
-        int capacity = (maxPosition.getX() + 1) * (maxPosition.getY() + 1);
-        if (numberOfMines > capacity) {
-            String excMsg = "Can't make board with " + numberOfMines 
-                    + " mines but capacity for only " + capacity;
-            throw new IllegalArgumentException(excMsg);
-        }
+//        if (numberOfMines < 0) {
+//            String excMsg = "Number of mines " + numberOfMines
+//                    + " is not valid, should be at least 0";
+//            throw new IllegalArgumentException(excMsg);
+//        }
+//        int capacity = (maxPosition.getX() + 1) * (maxPosition.getY() + 1);
+//        if (numberOfMines > capacity) {
+//            String excMsg = "Can't make board with " + numberOfMines 
+//                    + " mines but capacity for only " + capacity;
+//            throw new IllegalArgumentException(excMsg);
+//        }
         HashSet<Position> mineLocations = new HashSet<>();
-        Position mineLocation;
-        while (mineLocations.size() < numberOfMines) {
-            mineLocation = Position.random(maxPosition);
-            mineLocations.add(mineLocation);
-        }
+//        Position mineLocation;
+//        while (mineLocations.size() < numberOfMines) {
+//            mineLocation = Position.random(maxPosition);
+//            mineLocations.add(mineLocation);
+//        }
         return new Board(maxPosition, mineLocations);
     }
     
