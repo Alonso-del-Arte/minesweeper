@@ -566,6 +566,7 @@ public class BoardTest {
      */
     @Test
     public void testMakeBoard() {
+        fail("BRITTLE TEST, REWRITE");
         System.out.println("makeBoard");
         Position maxPos = PositionTest.makePosition();
         int numberOfMines = maxPos.getX() * maxPos.getY();
