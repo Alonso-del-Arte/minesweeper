@@ -562,31 +562,31 @@ public class BoardTest {
     }
 
     /**
-     * Test of makeBoard function, of class Board.
+     * Test of the makeBoard function, of the Board class.
      */
     @Test
     public void testMakeBoard() {
-        fail("BRITTLE TEST, REWRITE");
         System.out.println("makeBoard");
         Position maxPos = PositionTest.makePosition();
-        int numberOfMines = maxPos.getX() * maxPos.getY();
+        int numberOfMines = maxPos.getX() + maxPos.getY() + 1;
         Board board = Board.makeBoard(numberOfMines, maxPos);
         Optional<Mine> option;
         Position currLoc = POSITION_ZERO;
         PositionStatus status;
-        String msg;
-        while (currLoc.isWithinBounds(maxPos) && board.gameUnderway()) {
+        while (currLoc.isWithinBounds(maxPos) 
+                && board.gameUnderway()) {
             status = board.query(currLoc);
             if (status.equals(PositionStatus.COVERED)) {
                 option = board.reveal(currLoc);
                 if (option.isPresent()) {
-                    msg = "Oops, stepped on mine at " + currLoc.toString();
+                    String msg = "Oops, stepped on mine at " 
+                            + currLoc.toString();
                     assert !board.gameUnderway() : msg;
                 }
             }
             currLoc = currLoc.nextColumnWithReset(maxPos);
         }
-        msg = "Board should have had a mine that detonated and ended the game";
+        String msg = "Board should've had mine detonate and end the game";
         assert !board.gameUnderway() : msg;
     }
     
