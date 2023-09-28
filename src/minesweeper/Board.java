@@ -324,29 +324,38 @@ public class Board {
     /**
      * Creates a new board, with a specified number of mines. The board is 
      * rectangular.
-     * @param numberOfMines How many mines the board should have. Preferably a 
-     * positive number, but 0 is allowed.
-     * @param maxPosition The bottom right corner position.
+     * @param numberOfMines How many mines the board should have. Must not be a 
+     * negative number. Must not be a number greater than the total number of 
+     * squares. Preferably a number greater than 0 and less than the total 
+     * number of squares, but those extremes are allowed. For example, 43 for a 
+     * 10 &times; 10 board.
+     * @param maxPosition The bottom right corner position. For example, (9, 9) 
+     * for a 10 &times; 10 board &mdash; remember that (0, 0) is the top left 
+     * corner.
      * @return A new board, with the mines' positions chosen pseudorandomly.
+     * @throws IllegalArgumentException If <code>numberOfMines</code> is 
+     * negative (e.g., &minus;24) or greater than there are available positions 
+     * to mine (e.g., 197 mines for a 14 &times; 14 board, which only has 196 
+     * positions to mine).
      */
     public static Board makeBoard(int numberOfMines, Position maxPosition) {
-//        if (numberOfMines < 0) {
-//            String excMsg = "Number of mines " + numberOfMines
-//                    + " is not valid, should be at least 0";
-//            throw new IllegalArgumentException(excMsg);
-//        }
-//        int capacity = (maxPosition.getX() + 1) * (maxPosition.getY() + 1);
-//        if (numberOfMines > capacity) {
-//            String excMsg = "Can't make board with " + numberOfMines 
-//                    + " mines but capacity for only " + capacity;
-//            throw new IllegalArgumentException(excMsg);
-//        }
+        if (numberOfMines < 0) {
+            String excMsg = "Number of mines " + numberOfMines
+                    + " is not valid, should be at least 0";
+            throw new IllegalArgumentException(excMsg);
+        }
+        int capacity = (maxPosition.getX() + 1) * (maxPosition.getY() + 1);
+        if (numberOfMines > capacity) {
+            String excMsg = "Can't make board with " + numberOfMines 
+                    + " mines but capacity for only " + capacity;
+            throw new IllegalArgumentException(excMsg);
+        }
         HashSet<Position> mineLocations = new HashSet<>();
-//        Position mineLocation;
-//        while (mineLocations.size() < numberOfMines) {
-//            mineLocation = Position.random(maxPosition);
-//            mineLocations.add(mineLocation);
-//        }
+        Position mineLocation;
+        while (mineLocations.size() < numberOfMines) {
+            mineLocation = Position.random(maxPosition);
+            mineLocations.add(mineLocation);
+        }
         return new Board(maxPosition, mineLocations);
     }
     
