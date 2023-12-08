@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Alonso del Arte
+ * Copyright (C) 2023 Alonso del Arte
  *
  * This program is free software: you can redistribute it and/or modify it under 
  * the terms of the GNU General Public License as published by the Free Software 
@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -32,6 +33,11 @@ public class BoardTest {
     
     private static final Position POSITION_ZERO = new Position(0, 0);
     
+    @Test
+    public void testGetBottomRightCorner() {
+        fail("HAVEN'T WRITTEN TEST YET");
+    }
+    
     /**
      * Test of query function, of class Board. At the beginning of the game, all 
      * positions should be covered.
@@ -39,7 +45,7 @@ public class BoardTest {
     @Test
     public void testInitialQuery() {
         Position maxPos = PositionTest.makePosition();
-        HashSet<Position> mineLocs = new HashSet<>();
+        Set<Position> mineLocs = new HashSet<>();
         Board board = new Board(maxPos, mineLocs);
         for (Position curr = POSITION_ZERO;
                 curr.isWithinBounds(POSITION_ZERO);
@@ -56,9 +62,9 @@ public class BoardTest {
         System.out.println("query");
         Position centerSquare = POSITION_ZERO.nextColumn().nextRow();
         Position sizingCorner = centerSquare.nextColumn().nextRow();
-        HashSet<Position> edgeSquares = centerSquare.getNeighbors();
+        Set<Position> edgeSquares = centerSquare.getNeighbors();
         ArrayList<Position> neighbors = new ArrayList<>(edgeSquares);
-        HashSet<Position> mineLocs;
+        Set<Position> mineLocs;
         Board board;
         Optional<Mine> option;
         PositionStatus[] statuses = PositionStatus.values();
@@ -79,7 +85,7 @@ public class BoardTest {
     public void testNoQueryOutOfBounds() {
         Position nextToCorner = PositionTest.makePosition();
         Position corner = nextToCorner.nextColumn();
-        HashSet<Position> mineLocs = new HashSet<>();
+        Set<Position> mineLocs = new HashSet<>();
         mineLocs.add(nextToCorner);
         mineLocs.add(corner);
         Board board = new Board(corner, mineLocs);
@@ -110,7 +116,7 @@ public class BoardTest {
      */
     @Test
     public void testMayQueryAfterWinning() {
-        HashSet<Position> mineLocs = new HashSet<>();
+        Set<Position> mineLocs = new HashSet<>();
         mineLocs.add(POSITION_ZERO);
         Board board = new Board(POSITION_ZERO, mineLocs);
         board.flag(POSITION_ZERO);
@@ -132,7 +138,7 @@ public class BoardTest {
         Position mineLoc1 = POSITION_ZERO;
         Position mineLoc2 = mineLoc1.nextRow();
         Position notAMineLoc = mineLoc1.nextColumn();
-        HashSet<Position> mineLocs = new HashSet<>();
+        Set<Position> mineLocs = new HashSet<>();
         mineLocs.add(mineLoc1);
         mineLocs.add(mineLoc2);
         Position maxPos = mineLoc2.nextColumn();
@@ -158,7 +164,7 @@ public class BoardTest {
         Position mineLoc2 = mineLoc1.nextRow();
         Position mineLoc3 = mineLoc2.nextRow();
         Position notAMineLoc = mineLoc3.nextColumn();
-        HashSet<Position> mineLocs = new HashSet<>();
+        Set<Position> mineLocs = new HashSet<>();
         mineLocs.add(mineLoc1);
         mineLocs.add(mineLoc2);
         mineLocs.add(mineLoc3);
@@ -182,7 +188,7 @@ public class BoardTest {
     @Test
     public void testReveal() {
         System.out.println("reveal");
-        HashSet<Position> mineLocs = new HashSet<>();
+        Set<Position> mineLocs = new HashSet<>();
         mineLocs.add(POSITION_ZERO);
         Board board = new Board(POSITION_ZERO, mineLocs);
         Optional<Mine> option = board.reveal(POSITION_ZERO);
@@ -202,7 +208,7 @@ public class BoardTest {
         int minedColumnY = (int) Math.floor(Math.random() * 50) + 14;
         Position minedColumnStart = new Position(0, minedColumnY);
         Position minedColumnEnd = new Position(minedColumnEndX, minedColumnY);
-        HashSet<Position> mineLocs = new HashSet<>();
+        Set<Position> mineLocs = new HashSet<>();
         for (Position loc = minedColumnStart;
                 loc.isWithinBounds(minedColumnEnd);
                 loc = loc.nextRow()) {
@@ -234,7 +240,7 @@ public class BoardTest {
     @Test
     public void testNoRevealForAlreadyRevealed() {
         Position mineLoc = PositionTest.makePosition();
-        HashSet<Position> mineLocs = new HashSet<>();
+        Set<Position> mineLocs = new HashSet<>();
         mineLocs.add(mineLoc);
         Position mineNeighbor = mineLoc.nextRow();
         Board board = new Board(mineNeighbor.nextColumn().nextRow(), mineLocs);
@@ -269,7 +275,7 @@ public class BoardTest {
     public void testNoRevealOutOfBounds() {
         Position nextToCorner = PositionTest.makePosition();
         Position corner = nextToCorner.nextColumn();
-        HashSet<Position> mineLocs = new HashSet<>();
+        Set<Position> mineLocs = new HashSet<>();
         mineLocs.add(nextToCorner);
         mineLocs.add(corner);
         Board board = new Board(corner, mineLocs);
@@ -301,7 +307,7 @@ public class BoardTest {
     @Test
     public void testNoRevealAfterGameOver() {
         Position mineLoc = PositionTest.makePosition();
-        HashSet<Position> mineLocs = new HashSet<>();
+        Set<Position> mineLocs = new HashSet<>();
         mineLocs.add(mineLoc);
         Position mineNeighbor = mineLoc.nextRow();
         Board board = new Board(mineNeighbor.nextColumn().nextRow(), mineLocs);
@@ -340,7 +346,7 @@ public class BoardTest {
     @Test
     public void testFlag() {
         System.out.println("flag");
-        HashSet<Position> mineLocs = new HashSet<>();
+        Set<Position> mineLocs = new HashSet<>();
         mineLocs.add(POSITION_ZERO);
         Board board = new Board(POSITION_ZERO, mineLocs);
         board.flag(POSITION_ZERO);
@@ -353,7 +359,7 @@ public class BoardTest {
     @Test
     public void testUnflag() {
         System.out.println("unflag");
-        HashSet<Position> mineLocs = new HashSet<>();
+        Set<Position> mineLocs = new HashSet<>();
         mineLocs.add(POSITION_ZERO);
         mineLocs.add(POSITION_ZERO.nextColumn());
         Board board = new Board(POSITION_ZERO.nextColumn().nextRow(), mineLocs);
@@ -369,7 +375,7 @@ public class BoardTest {
     @Test
     public void testNoFlagForAlreadyFlagged() {
         Position mineLoc = PositionTest.makePosition();
-        HashSet<Position> mineLocs = new HashSet<>();
+        Set<Position> mineLocs = new HashSet<>();
         mineLocs.add(mineLoc);
         Board board = new Board(mineLoc.nextColumn(), mineLocs);
         board.flag(mineLoc);
@@ -399,7 +405,7 @@ public class BoardTest {
     public void testNoFlagOutOfBounds() {
         Position nextToCorner = PositionTest.makePosition();
         Position corner = nextToCorner.nextColumn();
-        HashSet<Position> mineLocs = new HashSet<>();
+        Set<Position> mineLocs = new HashSet<>();
         mineLocs.add(nextToCorner);
         mineLocs.add(corner);
         Board board = new Board(corner, mineLocs);
@@ -430,7 +436,7 @@ public class BoardTest {
     @Test
     public void testNoFlagAfterGameOver() {
         Position mineLoc = PositionTest.makePosition();
-        HashSet<Position> mineLocs = new HashSet<>();
+        Set<Position> mineLocs = new HashSet<>();
         mineLocs.add(mineLoc);
         Board board = new Board(mineLoc.nextColumn(), mineLocs);
         Optional<Mine> option = board.reveal(mineLoc);
@@ -467,7 +473,7 @@ public class BoardTest {
     @Test
     public void testNoUnflagIfNotFlagged() {
         Position mineLoc = PositionTest.makePosition();
-        HashSet<Position> mineLocs = new HashSet<>();
+        Set<Position> mineLocs = new HashSet<>();
         mineLocs.add(mineLoc);
         Board board = new Board(mineLoc.nextColumn(), mineLocs);
         assertEquals(PositionStatus.COVERED, board.query(mineLoc));
@@ -496,7 +502,7 @@ public class BoardTest {
     public void testNoUnflagOutOfBounds() {
         Position nextToCorner = PositionTest.makePosition();
         Position corner = nextToCorner.nextColumn();
-        HashSet<Position> mineLocs = new HashSet<>();
+        Set<Position> mineLocs = new HashSet<>();
         mineLocs.add(nextToCorner);
         mineLocs.add(corner);
         Board board = new Board(corner, mineLocs);
@@ -527,7 +533,7 @@ public class BoardTest {
     @Test
     public void testNoUnflagAfterGameOver() {
         Position mineLoc = PositionTest.makePosition();
-        HashSet<Position> mineLocs = new HashSet<>();
+        Set<Position> mineLocs = new HashSet<>();
         mineLocs.add(mineLoc);
         Board board = new Board(mineLoc.nextColumn().nextRow(), mineLocs);
         Position mineNeighbor = mineLoc.nextColumn();
@@ -649,7 +655,7 @@ public class BoardTest {
     public void testGameUnderway() {
         System.out.println("gameUnderway");
         Position maxPos = PositionTest.makePosition();
-        HashSet<Position> mineLocs = new HashSet<>();
+        Set<Position> mineLocs = new HashSet<>();
         Board board = new Board(maxPos, mineLocs);
         String msg = "Game should be considered to be underway";
         assert board.gameUnderway() : msg;
@@ -661,7 +667,7 @@ public class BoardTest {
     @Test
     public void testGameOver() {
         Position maxPos = PositionTest.makePosition();
-        HashSet<Position> mineLocs = new HashSet<>();
+        Set<Position> mineLocs = new HashSet<>();
         mineLocs.add(POSITION_ZERO);
         Board board = new Board(maxPos, mineLocs);
         board.reveal(POSITION_ZERO);
@@ -676,7 +682,7 @@ public class BoardTest {
     public void testGameWon() {
         System.out.println("gameWon");
         Position maxPos = PositionTest.makePosition();
-        HashSet<Position> mineLocs = new HashSet<>();
+        Set<Position> mineLocs = new HashSet<>();
         Position mineLoc = POSITION_ZERO;
         while (mineLoc.isWithinBounds(maxPos)) {
             mineLocs.add(mineLoc);
@@ -701,7 +707,7 @@ public class BoardTest {
     @Test
     public void testGameLost() {
         Position maxPos = PositionTest.makePosition();
-        HashSet<Position> mineLocs = new HashSet<>();
+        Set<Position> mineLocs = new HashSet<>();
         Position mineLoc = POSITION_ZERO;
         while (mineLoc.isWithinBounds(maxPos)) {
             mineLocs.add(mineLoc);
@@ -729,7 +735,7 @@ public class BoardTest {
     public void testCanStillWinAfterBadFlag() {
         int maxColumn = (int) Math.floor(Math.random() * 10) + 8;
         Position maxPos = new Position(1, maxColumn);
-        HashSet<Position> mineLocs = new HashSet<>();
+        Set<Position> mineLocs = new HashSet<>();
         Position mineLoc = new Position(1, 0);
         while (mineLoc.isWithinBounds(maxPos)) {
             mineLocs.add(mineLoc);
@@ -761,7 +767,7 @@ public class BoardTest {
         System.out.println("Constructor");
         Position maxPos = PositionTest.makePosition();
         Position badMineLoc = maxPos.nextColumn().nextRow();
-        HashSet<Position> mineLocs = new HashSet<>();
+        Set<Position> mineLocs = new HashSet<>();
         mineLocs.add(badMineLoc);
         try {
             Board badBoard = new Board(maxPos, mineLocs);

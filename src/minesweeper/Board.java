@@ -19,8 +19,10 @@ package minesweeper;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Represents a board with mines.
@@ -35,13 +37,13 @@ public class Board {
     
     private final Position maxCorner;
     
-    private final HashMap<Position, PositionStatus> statuses = new HashMap<>();
+    private final Map<Position, PositionStatus> statuses = new HashMap<>();
     
-    private final HashMap<Position, Optional<Flag>> flags = new HashMap<>();
+    private final Map<Position, Optional<Flag>> flags = new HashMap<>();
     
-    private final HashMap<Position, Optional<Mine>> mines = new HashMap<>();
+    private final Map<Position, Optional<Mine>> mines = new HashMap<>();
     
-    private final HashMap<Position, Integer> neighborCounts = new HashMap<>();
+    private final Map<Position, Integer> neighborCounts = new HashMap<>();
     
     private final int mineCount;
     
@@ -347,7 +349,7 @@ public class Board {
     }
     
     private static boolean anyOutOfBounds(Position maxPos, 
-            HashSet<Position> positions) {
+            Set<Position> positions) {
         boolean boundFlag = true;
         Iterator iter = positions.iterator();
         Position curr;
@@ -374,7 +376,7 @@ public class Board {
         }
     }
     
-    private void setMines(HashSet<Position> mineLocations) {
+    private void setMines(Set<Position> mineLocations) {
         mineLocations.forEach((position) -> {
             Mine mine = new Mine(position);
             this.mines.put(position, Optional.of(mine));
@@ -410,7 +412,7 @@ public class Board {
      * @param maxPos The position of the bottom right corner.
      * @param mineLocations A set of locations where to place the mines.
      */
-    Board(Position maxPos, HashSet<Position> mineLocations) {
+    Board(Position maxPos, Set<Position> mineLocations) {
         if (anyOutOfBounds(maxPos, mineLocations)) {
             String excMsg = "All mine locations should be within bounds";
             throw new IllegalArgumentException(excMsg);
