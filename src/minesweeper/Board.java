@@ -98,37 +98,20 @@ public class Board {
         int neighborCount = this.neighborCounts.get(position);
         PositionStatus status;
         switch (neighborCount) {
-            case 0:
-                status = PositionStatus.REVEALED_EMPTY;
-                break;
-            case 1:
-                status = PositionStatus.REVEALED_EMPTY_NEAR_1;
-                break;
-            case 2:
-                status = PositionStatus.REVEALED_EMPTY_NEAR_2;
-                break;
-            case 3:
-                    status = PositionStatus.REVEALED_EMPTY_NEAR_3;
-                    break;
-            case 4:
-                status = PositionStatus.REVEALED_EMPTY_NEAR_4;
-                break;
-            case 5:
-                status = PositionStatus.REVEALED_EMPTY_NEAR_5;
-                break;
-            case 6:
-                status = PositionStatus.REVEALED_EMPTY_NEAR_6;
-                break;
-            case 7:
-                status = PositionStatus.REVEALED_EMPTY_NEAR_7;
-                break;
-            case 8:
-                status = PositionStatus.REVEALED_EMPTY_NEAR_8;
-                break;
-            default:
+            case 0 -> status = PositionStatus.REVEALED_EMPTY;
+            case 1 -> status = PositionStatus.REVEALED_EMPTY_NEAR_1;
+            case 2 -> status = PositionStatus.REVEALED_EMPTY_NEAR_2;
+            case 3 -> status = PositionStatus.REVEALED_EMPTY_NEAR_3;
+            case 4 -> status = PositionStatus.REVEALED_EMPTY_NEAR_4;
+            case 5 -> status = PositionStatus.REVEALED_EMPTY_NEAR_5;
+            case 6 -> status = PositionStatus.REVEALED_EMPTY_NEAR_6;
+            case 7 -> status = PositionStatus.REVEALED_EMPTY_NEAR_7;
+            case 8 -> status = PositionStatus.REVEALED_EMPTY_NEAR_8;
+            default -> {
                 String msg = "Neighbor count " + neighborCount 
                         + " is not valid";
                 throw new RuntimeException(msg);
+            }
         }
         this.statuses.put(position, status);
     }
