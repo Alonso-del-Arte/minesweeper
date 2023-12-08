@@ -159,5 +159,7 @@ nbactions.xml
 nb-configuration.xml
 
 # General
-draft/
-secrets/
+src/draft/
+src/secrets/
+test/draft/
+test/secrets/
