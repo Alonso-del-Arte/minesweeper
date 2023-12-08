@@ -55,8 +55,13 @@ public class Board {
     
     private boolean gameLost = false;
     
+    /**
+     * Gives the position of the bottom right corner of this board. For 
+     * reference, the top left corner is (0, 0). 
+     * @return The bottom right corner. For example, (19, 19).
+     */
     public Position getBottomRightCorner() {
-        return TOP_LEFT_CORNER;
+        return this.maxCorner;
     }
     
     /**
