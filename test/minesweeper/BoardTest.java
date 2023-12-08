@@ -33,9 +33,17 @@ public class BoardTest {
     
     private static final Position POSITION_ZERO = new Position(0, 0);
     
+    /**
+     * Test of the getBottomRightCorner function of the Board class.
+     */
     @Test
     public void testGetBottomRightCorner() {
-        fail("HAVEN'T WRITTEN TEST YET");
+        System.out.println("getBottomRightCorner");
+        Position expected = PositionTest.makePosition();
+        Set<Position> mineLocations = new HashSet<>();
+        Board board = new Board(expected, mineLocations);
+        Position actual = board.getBottomRightCorner();
+        assertEquals(expected, actual);
     }
     
     /**
