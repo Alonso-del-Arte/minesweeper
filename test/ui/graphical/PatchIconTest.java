@@ -18,21 +18,20 @@ package ui.graphical;
 
 import java.awt.Component;
 import java.awt.Graphics;
-import junit.framework.TestCase;
+
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
- *
- * @author al
+ * Tests of the PatchIcon class.
+ * @author Alonso del Arte
  */
-public class PatchIconTest extends TestCase {
+public class PatchIconTest {
     
-    public PatchIconTest(String testName) {
-        super(testName);
-    }
-
     /**
      * Test of getIconHeight method, of class PatchIcon.
      */
+    @Test
     public void testGetIconHeight() {
         System.out.println("getIconHeight");
         PatchIcon instance = new PatchIcon();
@@ -46,6 +45,7 @@ public class PatchIconTest extends TestCase {
     /**
      * Test of getIconWidth method, of class PatchIcon.
      */
+    @Test
     public void testGetIconWidth() {
         System.out.println("getIconWidth");
         PatchIcon instance = new PatchIcon();
@@ -59,6 +59,7 @@ public class PatchIconTest extends TestCase {
     /**
      * Test of paintIcon method, of class PatchIcon.
      */
+    @Test
     public void testPaintIcon() {
         System.out.println("paintIcon");
         Component c = null;

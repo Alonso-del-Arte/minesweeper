@@ -16,21 +16,20 @@
  */
 package ui.graphical;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  * Tests of the Game class.
  * @author Alonso del Arte
  */
-public class GameTest extends TestCase {
+public class GameTest {
     
-    public GameTest(String testName) {
-        super(testName);
-    }
-
     /**
      * Test of main method, of class Game.
      */
+    @Test
     public void testMain() {
         System.out.println("main");
         String[] args = null;
