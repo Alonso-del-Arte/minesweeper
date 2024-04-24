@@ -64,9 +64,17 @@ public class Board {
         return this.maxCorner;
     }
     
-    // TODO: Write tests for this
+    /**
+     * Gives the dimension of this board as text. This is mostly for the 
+     * graphical user interface, such as the title bar of a game window.
+     * @return The text with the dimension of this board. For example, if this 
+     * board is 10 spaces wide and 10 spaces long, this function would return 
+     * "10 &times; 10".
+     */
     public String dimensionText() {
-        return "SORRY, NOT IMPLEMENTED YET";
+        String intermediate = this.maxCorner.toString();
+        return intermediate.replace("(", "").replace(", ", " \u00D7 ")
+                .replace(")", "");
     }
     
     /**
