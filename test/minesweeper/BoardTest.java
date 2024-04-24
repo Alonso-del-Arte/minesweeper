@@ -47,6 +47,20 @@ public class BoardTest {
     }
     
     /**
+     * Test of the dimensionText function of the Board class.
+     */
+    @Test
+    public void testDimensionText() {
+        Position maxPos = PositionTest.makePosition();
+        Set<Position> mineLocations = new HashSet<>();
+        Board board = new Board(maxPos, mineLocations);
+        String expected = maxPos.toString().replace("(", "").replace(" ", "")
+                .replace(",", "\u00D7").replace(")", "");
+        String actual = board.dimensionText().replace(" ", "");
+        assertEquals(expected, actual);
+    }
+    
+    /**
      * Test of query function, of class Board. At the beginning of the game, all 
      * positions should be covered.
      */
