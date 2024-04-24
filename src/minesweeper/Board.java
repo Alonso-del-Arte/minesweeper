@@ -64,6 +64,11 @@ public class Board {
         return this.maxCorner;
     }
     
+    // TODO: Write tests for this
+    public String dimensionText() {
+        return "SORRY, NOT IMPLEMENTED YET";
+    }
+    
     /**
      * Tells whether the game is underway or not. If no mine has detonated, and 
      * there are mines left to flag or positions without mines to unflag, the 
