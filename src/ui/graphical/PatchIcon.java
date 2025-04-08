@@ -59,7 +59,7 @@ class PatchIcon implements Icon {
     }
     
     PatchIcon() {
-        this(new Dimension(1, 1));
+        this(DEFAULT_DIMENSION);
     }
 
     PatchIcon(Dimension dimension) {
