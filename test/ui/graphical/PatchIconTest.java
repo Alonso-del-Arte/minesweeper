@@ -93,4 +93,12 @@ public class PatchIconTest {
         fail("The test case is a prototype.");
     }
     
+    @Test
+    public void testAuxConstructorFillsInDefaultDimension() {
+        PatchIcon instance = new PatchIcon();
+        Dimension expected = PatchIcon.DEFAULT_DIMENSION;
+        Dimension actual = instance.getDimension();
+        assertEquals(expected, actual);
+    }
+    
 }
