@@ -35,8 +35,10 @@ class PatchIcon implements Icon {
      */
     public static final Dimension DEFAULT_DIMENSION = new Dimension(16, 16);
     
+    private final Dimension originalDimension;
+    
     public Dimension getDimension() {
-        return new Dimension(20, 21);
+        return this.originalDimension;
     }
     
     // TODO: Write tests for this
@@ -61,7 +63,7 @@ class PatchIcon implements Icon {
     }
 
     PatchIcon(Dimension dimension) {
-        // TODO: Write tests for this
+        this.originalDimension = dimension;
     }
     
 }
