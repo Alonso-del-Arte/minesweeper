@@ -30,9 +30,10 @@ import javax.swing.Icon;
  */
 class PatchIcon implements Icon {
     
-    // TODO: Write tests for this
-    public static final Dimension DEFAULT_DIMENSION 
-            = new Dimension(Byte.MAX_VALUE, 128);
+    /**
+     * The default dimension for a patch icon, 16 pixels wide by 16 pixels tall.
+     */
+    public static final Dimension DEFAULT_DIMENSION = new Dimension(16, 16);
     
     public Dimension getDimension() {
         return new Dimension(20, 21);
