@@ -31,7 +31,7 @@ import javax.swing.Icon;
 class PatchIcon implements Icon {
     
     // TODO: Write tests for this
-    private static final Dimension DEFAULT_DIMENSION 
+    public static final Dimension DEFAULT_DIMENSION 
             = new Dimension(Byte.MAX_VALUE, 128);
     
     public Dimension getDimension() {
