@@ -23,6 +23,8 @@ import java.awt.Graphics;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+import static ui.graphical.GameTest.RANDOM;
+
 /**
  * Tests of the PatchIcon class.
  * @author Alonso del Arte
@@ -33,6 +35,17 @@ public class PatchIconTest {
     public void testDefaultDimensionConstant() {
         Dimension expected = new Dimension(16, 16);
         Dimension actual = PatchIcon.DEFAULT_DIMENSION;
+        assertEquals(expected, actual);
+    }
+    
+    @Test
+    public void testGetDimension() {
+        System.out.println("getDimension");
+        int width = RANDOM.nextInt(4, 256);
+        int height = RANDOM.nextInt(4, 256);
+        Dimension expected = new Dimension(width, height);
+        PatchIcon instance = new PatchIcon(expected);
+        Dimension actual = instance.getDimension();
         assertEquals(expected, actual);
     }
     
